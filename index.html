@@ -1,145 +1,114 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-  <meta charset="UTF-8">
-  <title>Boss AIX</title>
-
+  <meta charset="UTF-8" />
+  <title>Boss AIX – तुमचा AI मित्र</title>
   <style>
     body {
-      margin: 0;
-      background: #0f172a;
       font-family: Arial, sans-serif;
+      background: #0f172a;
       color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-
-    .container {
-      max-width: 700px;
-      margin: 30px auto;
+    .chat {
+      width: 420px;
+      height: 600px;
       background: #020617;
       border-radius: 12px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
+      box-shadow: 0 0 30px rgba(0,0,0,.6);
     }
-
     .header {
-      padding: 16px;
-      background: linear-gradient(90deg,#2563eb,#22c55e);
-      font-size: 20px;
+      padding: 14px;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
       font-weight: bold;
     }
-
-    #chat {
-      padding: 20px;
-      height: 420px;
+    .messages {
+      flex: 1;
+      padding: 12px;
       overflow-y: auto;
     }
-
     .msg {
-      margin-bottom: 14px;
-      line-height: 1.5;
+      margin-bottom: 10px;
+      line-height: 1.4;
     }
-
-    .you {
-      color: #38bdf8;
-    }
-
-    .boss {
-      color: #22c55e;
-    }
-
-    .input-box {
+    .you { color: #38bdf8; }
+    .boss { color: #a7f3d0; }
+    .input {
       display: flex;
       border-top: 1px solid #1e293b;
     }
-
     input {
       flex: 1;
-      padding: 14px;
-      font-size: 16px;
-      border: none;
-      outline: none;
+      padding: 10px;
       background: #020617;
+      border: none;
       color: white;
+      outline: none;
     }
-
     button {
-      padding: 14px 22px;
-      background: #2563eb;
-      color: white;
+      padding: 10px 14px;
+      background: #38bdf8;
       border: none;
       cursor: pointer;
-      font-size: 16px;
-    }
-
-    button:hover {
-      background: #1d4ed8;
+      font-weight: bold;
     }
   </style>
 </head>
-
 <body>
-
-<div class="container">
-  <div class="header">🤖 Boss AIX — तुमचा AI मित्र</div>
-
-  <div id="chat"></div>
-
-  <div class="input-box">
-    <input id="msg" placeholder="Boss AIX ला सांगा..." />
-    <button onclick="send()">SEND</button>
+  <div class="chat">
+    <div class="header">🤖 Boss AIX</div>
+    <div class="messages" id="messages"></div>
+    <div class="input">
+      <input id="input" placeholder="Boss AIX ला काहीही विचारा…" />
+      <button onclick="send()">Send</button>
+    </div>
   </div>
-</div>
 
 <script>
-  const API = "https://boss-aix-backend-x0lp.onrender.com/api/boss/command";
-  let lastPlan = false;
+const API = "https://boss-aix-backend-x0lp.onrender.com/api/boss/command";
+const messages = document.getElementById("messages");
+const input = document.getElementById("input");
 
-  function add(text, cls) {
-    const div = document.createElement("div");
-    div.className = "msg " + cls;
-    div.innerText = text;
-    document.getElementById("chat").appendChild(div);
-    document.getElementById("chat").scrollTop = 999999;
-  }
+function add(text, cls) {
+  const div = document.createElement("div");
+  div.className = "msg " + cls;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
 
-  async function send() {
-    const text = msg.value;
-    if (!text) return;
+async function send() {
+  const text = input.value.trim();
+  if (!text) return;
 
-    msg.value = "";
-    add("You: " + text, "you");
+  add("You: " + text, "you");
+  input.value = "";
 
-    const payload = lastPlan
-      ? { message: text, approve: true }
-      : { message: text };
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
 
-    try {
-      const r = await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+    const data = await res.json();
 
-      const data = await r.json();
-
-      if (data.text) {
-        add("Boss AIX: " + data.text, "boss");
-      } else {
-        add("Boss AIX: (रिकामा प्रतिसाद)", "boss");
-      }
-
-      if (data.step === "PLAN") {
-        lastPlan = true;
-        add("Boss AIX: " + data.ask, "boss");
-      } else {
-        lastPlan = false;
-      }
-
-    } catch (e) {
-      add("❌ Backend reachable नाही", "boss");
+    if (data.text) {
+      add("Boss AIX: " + data.text, "boss");
+    } else {
+      add("Boss AIX: (रिकामा प्रतिसाद)", "boss");
     }
+  } catch (e) {
+    add("❌ Backend reachable नाही", "boss");
   }
+}
 </script>
-
 </body>
 </html>
