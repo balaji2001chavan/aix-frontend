@@ -1,82 +1,169 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Boss AIX</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
   <style>
-    body{margin:0;background:#020617;color:#e5e7eb;font-family:Arial}
-    .app{max-width:900px;margin:auto;height:100vh;display:flex;flex-direction:column;padding:12px}
-    h2{text-align:center}
-    #chat{flex:1;background:#020617;border:1px solid #1e293b;border-radius:8px;padding:10px;overflow:auto}
-    .msg{margin-bottom:8px}
-    .user{color:#38bdf8}
-    .boss{color:#22c55e}
-    .row{display:flex;gap:6px;margin-top:8px}
-    input{flex:1;padding:10px;border-radius:6px;border:none}
-    button{padding:10px;border:none;border-radius:6px;background:#22c55e;font-weight:bold}
+    body {
+      margin: 0;
+      background: #020617;
+      font-family: system-ui, Arial;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 900px;
+      height: 95vh;
+      display: flex;
+      flex-direction: column;
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 6px 0 10px;
+    }
+
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      border-radius: 8px;
+      padding: 10px;
+      background: #020617;
+    }
+
+    .msg {
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .user { color: #38bdf8; }
+    .boss { color: #22c55e; }
+
+    .input-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+    }
+
+    button {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #22c55e;
+      color: #022c22;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #334155;
+      color: #e5e7eb;
+    }
   </style>
 </head>
+
 <body>
 <div class="app">
   <h2>🤖 Boss AIX</h2>
+
   <div id="chat"></div>
-  <div class="row">
-    <input id="input" placeholder="Boss AIX ला सांगा..." />
-    <button onclick="send()">Send</button>
-    <button onclick="voice()">🎤</button>
+
+  <div class="input-row">
+    <input id="input" placeholder="Boss AIX ला सांगा…" />
+    <button onclick="sendMessage()">Send</button>
+    <button class="secondary" onclick="startVoice()">🎤</button>
   </div>
 </div>
 
 <script>
-const BACKEND =
- "https://boss-aix-backend.onrender.com/api/boss/command";
+  // 🔹 BACKEND URL (हे backend Render URL असलाच पाहिजे)
+  const BACKEND_URL = "https://boss-aix-backend.onrender.com/api/boss/command";
 
-const chat=document.getElementById("chat");
-const input=document.getElementById("input");
+  const chat = document.getElementById("chat");
+  const input = document.getElementById("input");
 
-function add(t,c){
-  const d=document.createElement("div");
-  d.className="msg "+c;
-  d.innerHTML=t;
-  chat.appendChild(d);
-  chat.scrollTop=chat.scrollHeight;
-}
-
-function speak(t){
-  const u=new SpeechSynthesisUtterance(t);
-  u.lang="mr-IN";
-  speechSynthesis.speak(u);
-}
-
-async function send(){
-  const text=input.value.trim();
-  if(!text)return;
-  add("<b>You:</b> "+text,"user");
-  input.value="";
-  try{
-    const r=await fetch(BACKEND,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({text})
-    });
-    const j=await r.json();
-    add("<b>Boss AIX:</b> "+j.reply,"boss");
-    speak(j.reply);
-  }catch{
-    add("<b>Boss AIX:</b> ❌ Backend reachable नाही","boss");
+  function addMessage(text, cls) {
+    const div = document.createElement("div");
+    div.className = "msg " + cls;
+    div.innerHTML = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
   }
-}
 
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-let rec=SR?new SR():null;
-if(rec){
- rec.lang="mr-IN";
- rec.onresult=e=>{input.value=e.results[0][0].transcript;send();}
-}
-function voice(){if(rec)rec.start();}
+  function speak(text) {
+    if (!window.speechSynthesis) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "mr-IN";
+    u.rate = 1;
+    u.pitch = 1;
+    speechSynthesis.speak(u);
+  }
 
-add("<b>Boss AIX:</b> मी तयार आहे. आज काय काम करू?","boss");
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMessage("<b>You:</b> " + text, "user");
+    input.value = "";
+
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+
+      if (!res.ok) throw new Error("Backend error");
+
+      const data = await res.json();
+      const reply = data.reply || "मी ऐकलं, पण उत्तर तयार नाही.";
+
+      addMessage("<b>Boss AIX:</b> " + reply, "boss");
+      speak(reply);
+
+    } catch (err) {
+      addMessage("<b>Boss AIX:</b> ❌ Backend reachable नाही", "boss");
+    }
+  }
+
+  // 🔹 VOICE INPUT
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recog = SR ? new SR() : null;
+
+  if (recog) {
+    recog.lang = "mr-IN";
+    recog.onresult = e => {
+      input.value = e.results[0][0].transcript;
+      sendMessage();
+    };
+  }
+
+  function startVoice() {
+    if (recog) recog.start();
+    else alert("Voice support उपलब्ध नाही");
+  }
+
+  // 🔹 WELCOME
+  addMessage("<b>Boss AIX:</b> मी तयार आहे. आज काय काम करू?", "boss");
 </script>
 </body>
 </html>
