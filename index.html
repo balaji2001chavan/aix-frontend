@@ -1,49 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="mr">
 <head>
-  <title>Boss AIX</title>
-  <style>
-    body { font-family: Arial; background: #111; color: #fff; padding: 20px; }
-    #chat { height: 400px; overflow-y: auto; background:#222; padding:10px; border-radius:10px; }
-    .you { color:#0af; margin:5px 0; }
-    .boss { color:#0f0; margin:5px 0; }
-  </style>
+<meta charset="UTF-8" />
+<title>Boss AIX</title>
+
+<style>
+body { background: #080808; color: white; font-family: Arial; padding: 30px; }
+#chat { width: 100%; height: 400px; overflow-y: auto; border: 1px solid #444; padding: 15px; }
+.msg { margin: 8px 0; }
+.you { color: #4FC3F7; }
+.boss { color: #00E676; font-weight: bold; }
+</style>
+
 </head>
 <body>
 
 <h2>Boss AIX – तुमचा स्मार्ट AI मित्र</h2>
+
 <div id="chat"></div>
 
-<input id="msg" placeholder="काही बोला..." style="width:70%; padding:10px;">
+<input id="msg" placeholder="मेसेज लिहा..." style="width:80%; padding:10px;">
 <button onclick="send()" style="padding:10px;">Send</button>
 
 <script>
-const API_URL = "https://boss-aix-backend-x01p.onrender.com/api/aix";
+const API = "https://boss-aix-backend-x01p.onrender.com/api/aix";
 
 function add(text, cls){
-  const div = document.createElement("div");
-  div.className = cls;
-  div.textContent = text;
-  document.getElementById("chat").appendChild(div);
+  const chat = document.getElementById("chat");
+  chat.innerHTML += `<div class='msg ${cls}'>${text}</div>`;
+  chat.scrollTop = chat.scrollHeight;
 }
 
-async function send() {
-  try {
-    const text = document.getElementById("msg").value;
-    document.getElementById("msg").value = "";
-    add("You: " + text, "you");
+async function send(){
+  const msg = document.getElementById("msg").value.trim();
+  if (!msg) return;
+  
+  add("You: " + msg, "you");
+  document.getElementById("msg").value = "";
 
-    const res = await fetch(backend, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ message:text })
+  try{
+    const r = await fetch(API, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ message: msg })
     });
 
-    const data = await res.json();
+    const data = await r.json();
     add("Boss AIX: " + data.reply, "boss");
   }
   catch(e){
-    add("Boss AIX: Backend reachable नाही ❌", "boss");
+    add("❌ Backend reachable नाही बॉस!", "boss");
   }
 }
 </script>
