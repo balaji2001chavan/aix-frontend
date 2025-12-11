@@ -1,50 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Boss AIX – Smart Chat</title>
+<title>Boss AIX</title>
 <style>
-body { background:#111; color:white; font-family:Arial; }
-#chat { height:400px; overflow-y:scroll; padding:10px; border:1px solid #333; }
-.msg { margin:8px 0; }
-.you { color:#4CAF50; }
-.boss { color:#00BFFF; }
-input { width:80%; padding:10px; }
-button { padding:10px; }
+body { font-family: Arial; background:#000; color:#0f0; padding:20px; }
+#chat { height: 400px; overflow-y: auto; border:1px solid #0f0; padding:10px; }
+.msg { margin-bottom: 10px; }
+.you { color:#0f0; }
+.aix { color:#0ff; }
 </style>
 </head>
 
 <body>
-<h2>Boss AIX – तुमचा Smart AI मित्र</h2>
-
+<h1>Boss AIX – तुमचा Smart AI मित्र</h1>
 <div id="chat"></div>
 
-<input id="msg" placeholder="संदेश टाईप करा...">
+<input id="box" placeholder="Message..." style="width:80%;padding:10px;">
 <button onclick="send()">Send</button>
 
 <script>
-const BACKEND = "https://boss-aix-backend-x0lp.onrender.com";
-
-function add(text, cls){
-    document.getElementById("chat").innerHTML += `<div class='msg ${cls}'>${text}</div>`;
+function add(text, type){
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+  div.innerText = text;
+  document.querySelector("#chat").appendChild(div);
 }
 
 async function send(){
-    let text = document.getElementById("msg").value;
-    if(!text) return;
+  const msg = document.querySelector("#box").value;
+  document.querySelector("#box").value = "";
 
-    add("You: " + text, "you");
-    document.getElementById("msg").value = "";
+  add("You: " + msg, "you");
 
-    const r = await fetch(BACKEND + "/api/boss/command", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ message:text })
-    });
+  const r = await fetch("https://boss-aix-backend.onrender.com/api/aix", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ message: msg })
+  });
 
-    const data = await r.json();
-    add("Boss AIX: " + data.reply, "boss");
+  const data = await r.json();
+  add("Boss AIX: " + data.ai, "aix");
 }
 </script>
-
 </body>
 </html>
