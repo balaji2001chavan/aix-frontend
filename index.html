@@ -1,89 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="mr">
 <head>
   <meta charset="UTF-8" />
-  <title>BOSS AIX – LIVE</title>
-</head>
-<body style="font-family:Arial">
+  <title>BOSS AIX – Smart Console</title>
 
-<h2>BOSS AIX – Talk to AIX</h2>
-
-<textarea id="msg" rows="8" cols="60">
-AIX:
-GOAL: Take screenshot of website
-CONTEXT: Demo proof
-RULES: No login
-OUTPUT: Screenshot
-</textarea>
-
-<br><br>
-<button onclick="askAIX()">Ask AIX</button>
-
-<div id="output" style="margin-top:20px;"></div>
-
-<script>
-const BACKEND_URL = "https://boss-aix-backend-nai6.onrender.com";
-async function askAIX() {
-  const msg = document.getElementById("msg").value;
-  const out = document.getElementById("output");
-
-  out.innerHTML = "AIX काम करत आहे...";
-
-  try {
-    const res = await fetch(BACKEND_URL + "/api/aix", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: msg })
-    });
-
-    const data = await res.json();
-
-    let html = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-
-    if (data.imageUrl) {
-      html += `
-        <h3>📸 Screenshot Proof</h3>
-        <img src="${BACKEND_URL}${data.imageUrl}"
-             style="max-width:100%; border:2px solid black;" />
-      `;
+  <style>
+    body {
+      background: radial-gradient(circle at top, #0f2027, #000);
+      color: #00ffd5;
+      font-family: "JetBrains Mono", monospace;
+      margin: 0;
+      padding: 0;
     }
 
-    out.innerHTML = html;
+    header {
+      padding: 16px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #033;
+    }
 
-  } catch (e) {
-    out.innerHTML = "❌ Error: " + e.message;
-  }
-}
-</script>
-<button onclick="startVoice()">🎙️ Voice Command</button>
+    .console {
+      width: 90%;
+      max-width: 900px;
+      margin: 20px auto;
+      background: #020b0f;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(0,255,213,0.2);
+      padding: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      background: #000;
+      color: #00ffd5;
+      border: 1px solid #044;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+      resize: none;
+    }
+
+    button {
+      background: linear-gradient(135deg, #00ffd5, #0ff);
+      color: #000;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    pre {
+      background: #000;
+      color: #9ff;
+      padding: 12px;
+      border-radius: 8px;
+      max-height: 350px;
+      overflow: auto;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+
+    img {
+      max-width: 100%;
+      margin-top: 15px;
+      border-radius: 8px;
+      border: 1px solid #044;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>🚀 BOSS AIX — Smart Command Console</header>
+
+<div class="console">
+  <textarea id="msg" placeholder="AIX ला आदेश द्या..."></textarea>
+  <br />
+  <button onclick="askAIX()">Ask AIX</button>
+
+  <pre id="out">Waiting for command...</pre>
+  <div id="media"></div>
+</div>
 
 <script>
-function startVoice() {
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
+async function askAIX() {
+  const msg = document.getElementById("msg").value;
+  document.getElementById("out").textContent = "Processing...";
+  document.getElementById("media").innerHTML = "";
 
-  if (!SpeechRecognition) {
-    alert("Voice recognition not supported in this browser");
-    return;
+  const res = await fetch("https://boss-aix-backend-nai6.onrender.com/api/aix", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: msg })
+  });
+
+  const data = await res.json();
+  document.getElementById("out").textContent =
+    JSON.stringify(data, null, 2);
+
+  if (data.imageUrl) {
+    document.getElementById("media").innerHTML =
+      `<img src="${data.imageUrl}" />`;
   }
-
-  const recognition = new SpeechRecognition();
-  recognition.lang = "mr-IN"; // Marathi (change to hi-IN / en-IN)
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-
-  recognition.start();
-
-  recognition.onresult = function (event) {
-    const spokenText = event.results[0][0].transcript;
-    document.getElementById("msg").value = spokenText;
-    alert("You said: " + spokenText);
-  };
-
-  recognition.onerror = function (event) {
-    alert("Voice error: " + event.error);
-  };
 }
 </script>
+
 </body>
 </html>
