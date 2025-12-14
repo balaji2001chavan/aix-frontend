@@ -2,118 +2,160 @@
 <html lang="mr">
 <head>
   <meta charset="UTF-8" />
-  <title>BOSS AIX – Smart Console</title>
+  <title>AIX Global Intelligence</title>
 
   <style>
     body {
-      background: radial-gradient(circle at top, #0f2027, #000);
-      color: #00ffd5;
-      font-family: "JetBrains Mono", monospace;
       margin: 0;
-      padding: 0;
+      height: 100vh;
+      background: radial-gradient(circle at top, #0f2027, #000);
+      font-family: "Segoe UI", sans-serif;
+      color: white;
+      overflow: hidden;
     }
 
-    header {
-      padding: 16px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      border-bottom: 1px solid #033;
-    }
-
-    .console {
-      width: 90%;
-      max-width: 900px;
-      margin: 20px auto;
-      background: #020b0f;
-      border-radius: 12px;
-      box-shadow: 0 0 40px rgba(0,255,213,0.2);
-      padding: 16px;
-    }
-
-    textarea {
+    /* 🌐 Background glow animation */
+    .bg-glow {
+      position: absolute;
       width: 100%;
-      height: 120px;
-      background: #000;
-      color: #00ffd5;
-      border: 1px solid #044;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 14px;
-      resize: none;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0,255,255,0.15), transparent 70%);
+      animation: pulse 6s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.3; }
+      to { opacity: 0.8; }
+    }
+
+    /* 💬 Chat container */
+    .chat-box {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 700px;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 0 30px rgba(0,255,255,0.3);
+    }
+
+    .messages {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+
+    .msg {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .user { color: #00eaff; }
+    .aix { color: #b5fffc; }
+
+    /* ⌨️ Input */
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 16px;
     }
 
     button {
-      background: linear-gradient(135deg, #00ffd5, #0ff);
-      color: #000;
+      padding: 12px 20px;
+      border-radius: 12px;
       border: none;
-      padding: 12px 22px;
-      border-radius: 30px;
+      background: #00eaff;
+      color: black;
+      font-size: 16px;
       cursor: pointer;
-      font-weight: bold;
-      margin-top: 12px;
     }
 
     button:hover {
-      opacity: 0.85;
-    }
-
-    pre {
-      background: #000;
-      color: #9ff;
-      padding: 12px;
-      border-radius: 8px;
-      max-height: 350px;
-      overflow: auto;
-      margin-top: 16px;
-      font-size: 13px;
-    }
-
-    img {
-      max-width: 100%;
-      margin-top: 15px;
-      border-radius: 8px;
-      border: 1px solid #044;
+      background: #5fffff;
     }
   </style>
 </head>
 
 <body>
+  <div class="bg-glow"></div>
 
-<header>🚀 BOSS AIX — Smart Command Console</header>
+  <div class="chat-box">
+    <div class="messages" id="messages"></div>
 
-<div class="console">
-  <textarea id="msg" placeholder="AIX ला आदेश द्या..."></textarea>
-  <br />
-  <button onclick="askAIX()">Ask AIX</button>
+    <div class="input-row">
+      <input id="userInput" placeholder="AIX शी बोला…" />
+      <button onclick="send()">Send</button>
+    </div>
+  </div>
 
-  <pre id="out">Waiting for command...</pre>
-  <div id="media"></div>
-</div>
+  <script>
+    const messagesDiv = document.getElementById("messages");
 
-<script>
-async function askAIX() {
-  const msg = document.getElementById("msg").value;
-  document.getElementById("out").textContent = "Processing...";
-  document.getElementById("media").innerHTML = "";
+    // 📁 Conversation storage (topic-wise)
+    function saveConversation(topic, data) {
+      const key = "AIX_" + topic;
+      const old = JSON.parse(localStorage.getItem(key) || "[]");
+      old.push(data);
+      localStorage.setItem(key, JSON.stringify(old));
+    }
 
-  const res = await fetch("https://boss-aix-backend-nai6.onrender.com/api/aix", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: msg })
-  });
+    function addMessage(text, cls) {
+      const div = document.createElement("div");
+      div.className = "msg " + cls;
+      div.innerText = text;
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
 
-  const data = await res.json();
-  document.getElementById("out").textContent =
-    JSON.stringify(data, null, 2);
+    async function send() {
+      const input = document.getElementById("userInput").value;
+      if (!input) return;
 
-  if (data.imageUrl) {
-    document.getElementById("media").innerHTML =
-      `<img src="${data.imageUrl}" />`;
-  }
-}
-</script>
+      addMessage("You: " + input, "user");
+      document.getElementById("userInput").value = "";
 
+      const res = await fetch(
+        "https://boss-aix-backend-nai6.onrender.com/aix/command",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: input })
+        }
+      );
+
+      const data = await res.json();
+
+      let reply = "";
+
+      if (data.mode === "SELF_CHANGE_PROPOSAL") {
+        reply =
+          "🔧 AIX स्वतःमध्ये बदल सुचवतो:\n" +
+          data.plan.summary +
+          "\n\nApprove करायचे का?";
+        saveConversation("SELF_CHANGE", data);
+      } else if (data.execution) {
+        reply = data.execution.result;
+        saveConversation(data.intent || "GENERAL", data);
+      } else {
+        reply = data.response || "AIX उत्तर देत आहे…";
+      }
+
+      addMessage("AIX: " + reply, "aix");
+    }
+  </script>
 </body>
 </html>
