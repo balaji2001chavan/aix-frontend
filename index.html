@@ -55,6 +55,35 @@ async function askAIX() {
   }
 }
 </script>
+<button onclick="startVoice()">🎙️ Voice Command</button>
 
+<script>
+function startVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice recognition not supported in this browser");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "mr-IN"; // Marathi (change to hi-IN / en-IN)
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.start();
+
+  recognition.onresult = function (event) {
+    const spokenText = event.results[0][0].transcript;
+    document.getElementById("msg").value = spokenText;
+    alert("You said: " + spokenText);
+  };
+
+  recognition.onerror = function (event) {
+    alert("Voice error: " + event.error);
+  };
+}
+</script>
 </body>
 </html>
