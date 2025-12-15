@@ -1,191 +1,163 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>AIX – Global Intelligence</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-
     body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+      background: radial-gradient(circle at top, #0f2027, #203a43, #000);
+      color: #fff;
       height: 100vh;
-      overflow: hidden;
-      background: black;
-      color: white;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* 🌌 Galaxy background */
-    .galaxy {
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at 20% 30%, #ffffff22, transparent 40%),
-        radial-gradient(circle at 80% 70%, #00ffff22, transparent 40%),
-        radial-gradient(circle at 50% 50%, #ff00ff22, transparent 50%),
-        linear-gradient(120deg, #020024, #090979, #000000);
-      animation: moveGalaxy 20s infinite alternate;
-      z-index: -1;
-    }
-fetch("http://localhost:10000/api/aix", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    message: "₹300 मध्ये कपडे दाखव"
-  })
-})
-.then(res => res.json())
-.then(data => {
-  console.log(data);
-});
-    @keyframes moveGalaxy {
-      0% { filter: hue-rotate(0deg); }
-      100% { filter: hue-rotate(360deg); }
+    header {
+      padding: 16px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      background: rgba(0,0,0,0.4);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
-    /* 💬 Chat box */
-    .chat-container {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 95%;
-      max-width: 600px;
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(15px);
-      border-radius: 18px;
-      padding: 15px;
-      box-shadow: 0 0 30px #00ffff55;
-    }
-
-    .chat-log {
-      max-height: 300px;
+    #chat {
+      flex: 1;
+      padding: 16px;
       overflow-y: auto;
-      margin-bottom: 10px;
-      font-size: 14px;
     }
 
     .msg {
-      margin-bottom: 10px;
-      line-height: 1.5;
+      max-width: 80%;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      line-height: 1.4;
+      white-space: pre-wrap;
     }
 
     .user {
-      color: #00ffff;
+      margin-left: auto;
+      background: #2563eb;
     }
 
     .aix {
-      color: #ffffff;
-      opacity: 0.9;
+      margin-right: auto;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
     }
 
-    .chat-input {
+    footer {
       display: flex;
-      gap: 10px;
+      padding: 12px;
+      background: rgba(0,0,0,0.5);
+      border-top: 1px solid rgba(255,255,255,0.1);
     }
 
     input {
       flex: 1;
       padding: 12px;
-      border-radius: 12px;
+      border-radius: 10px;
       border: none;
       outline: none;
-      font-size: 14px;
+      font-size: 15px;
     }
 
     button {
-      padding: 12px 16px;
-      border-radius: 12px;
+      margin-left: 10px;
+      padding: 12px 18px;
+      border-radius: 10px;
       border: none;
-      background: #00ffff;
-      color: black;
-      font-weight: bold;
+      background: #22c55e;
+      color: #000;
+      font-weight: 600;
       cursor: pointer;
     }
 
-    button:hover {
-      background: #00dddd;
-    }
-
-    footer {
-      position: fixed;
-      top: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0.8;
-      font-size: 13px;
+    button:disabled {
+      opacity: 0.5;
     }
   </style>
 </head>
-
 <body>
-  <div class="galaxy"></div>
 
-  <footer>🌍 AIX – Global Intelligence Online</footer>
+<header>
+  🌐 AIX – Global Intelligence Online
+</header>
 
-  <div class="chat-container">
-    <div class="chat-log" id="chatLog">
-      <div class="msg aix">नमस्कार 🙏 मी AIX आहे. तुम्ही काहीही विचारू शकता.</div>
-    </div>
+<div id="chat"></div>
 
-    <div class="chat-input">
-      <input
-        id="userInput"
-        placeholder="इथे लिहा… (Marathi / Hindi / English)"
-        onkeydown="if(event.key==='Enter') sendMessage()"
-      />
-      <button onclick="sendMessage()">Send</button>
-    </div>
-  </div>
+<footer>
+  <input
+    id="input"
+    placeholder="इथे लिहा… (Marathi / Hindi / English)"
+    autocomplete="off"
+  />
+  <button id="send">Send</button>
+</footer>
 
-  <script>
-    const chatLog = document.getElementById("chatLog");
-    const input = document.getElementById("userInput");
+<script>
+  const chat = document.getElementById("chat");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("send");
 
-    function addMessage(text, type) {
-      const div = document.createElement("div");
-      div.className = "msg " + type;
-      div.textContent = text;
-      chatLog.appendChild(div);
-      chatLog.scrollTop = chatLog.scrollHeight;
-    }
+  function addMessage(text, who) {
+    const div = document.createElement("div");
+    div.className = "msg " + who;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
 
-    async function sendMessage() {
-      const message = input.value.trim();
-      if (!message) return;
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
 
-      addMessage("🧑 " + message, "user");
-      input.value = "";
+    addMessage(text, "user");
+    input.value = "";
+    sendBtn.disabled = true;
 
-      try {
-        const res = await fetch("https://boss-aix-backend-nai6.onrender.com/api/aix", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer AIX_PRIVATE_001"
-            },
-            body: JSON.stringify({ message })
-          }
-        );
+    try {
+      const res = await fetch(
+        "https://boss-aix-backend-nai6.onrender.com/api/aix",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        }
+      );
 
-        const data = await res.json();
-        console.log("AIX RESPONSE:", data);
+      const data = await res.json();
 
-        addMessage("🤖 " + (data.reply || "AIX ने उत्तर दिलं नाही"), "aix");
-
-      } catch (err) {
-        console.error(err);
-        addMessage("⚠️ AIX server शी संपर्क झाला नाही", "aix");
+      if (data.reply) {
+        addMessage(data.reply, "aix");
       }
+
+      if (data.result) {
+        addMessage(JSON.stringify(data.result, null, 2), "aix");
+      }
+    } catch (e) {
+      addMessage("नेटवर्क अडचण आली बॉस. पुन्हा प्रयत्न करूया.", "aix");
+    } finally {
+      sendBtn.disabled = false;
     }
-  </script>
+  }
+
+  sendBtn.onclick = sendMessage;
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") sendMessage();
+  });
+
+  // Initial greeting
+  addMessage(
+    "नमस्कार बॉस 🙂\nमी AIX आहे.\nतुम्ही काहीही विचारू शकता – माहिती, सल्ला किंवा रियल काम.",
+    "aix"
+  );
+</script>
+
 </body>
 </html>
