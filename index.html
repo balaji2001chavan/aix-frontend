@@ -166,9 +166,7 @@ fetch("http://localhost:10000/api/aix", {
       input.value = "";
 
       try {
-        const res = await fetch(
-          "https://boss-aix-backend-nai6.onrender.com/api/aix-apx",
-          {
+        const res = await fetch("https://boss-aix-backend-nai6.onrender.com/api/aix", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
