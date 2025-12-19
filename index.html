@@ -1,286 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
-<meta charset="UTF-8" />
-<title>AIX – Global Action Intelligence</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<style>
-:root {
-  --bg: #0b0f1a;
-  --panel: rgba(255,255,255,0.06);
-  --accent: #4ade80;
-  --danger: #ef4444;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: Inter, system-ui, sans-serif;
-  background: radial-gradient(circle at top, #1f2937, #020617);
-  color: var(--text);
-  height: 100vh;
-  display: grid;
-  grid-template-columns: 260px 1fr;
-}
-
-/* ===== SIDEBAR ===== */
-aside {
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(255,255,255,0.08);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-}
-
-aside h2 {
-  margin: 0 0 16px;
-  font-size: 18px;
-}
-
-.folder {
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  background: var(--panel);
-  cursor: pointer;
-  transition: 0.2s;
-}
-.folder:hover {
-  background: rgba(255,255,255,0.12);
-}
-
-.new-folder {
-  margin-top: auto;
-  padding: 10px;
-  background: var(--accent);
-  color: #000;
-  border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-/* ===== MAIN ===== */
-main {
-  display: flex;
-  flex-direction: column;
-}
-
-/* HEADER */
-header {
-  padding: 14px 20px;
-  background: rgba(0,0,0,0.5);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header strong {
-  font-size: 18px;
-}
-
-.status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-}
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-/* CHAT */
-#chat {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.msg {
-  max-width: 70%;
-  padding: 14px;
-  margin-bottom: 14px;
-  border-radius: 14px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-}
-
-.user {
-  margin-left: auto;
-  background: #2563eb;
-}
-
-.aix {
-  margin-right: auto;
-  background: var(--panel);
-  border: 1px solid rgba(255,255,255,0.12);
-}
-
-/* JOB PANEL */
-.job {
-  margin: 10px 0;
-  padding: 12px;
-  background: rgba(0,0,0,0.4);
-  border-left: 4px solid var(--accent);
-  font-size: 14px;
-}
-
-/* INPUT */
-footer {
-  padding: 14px;
-  display: flex;
-  gap: 10px;
-  background: rgba(0,0,0,0.6);
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-
-input {
-  flex: 1;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  font-size: 15px;
-}
-
-button {
-  padding: 14px 18px;
-  border-radius: 10px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.send {
-  background: var(--accent);
-  color: #000;
-}
-
-.voice {
-  background: #22c55e;
-}
-
-.save {
-  background: #64748b;
-  color: #fff;
-}
-</style>
+  <meta charset="UTF-8" />
+  <title>AIX – Global Control Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #e5e7eb;
+      height: 100vh;
+      display: flex;
+    }
+    .panel {
+      padding: 14px;
+      box-sizing: border-box;
+    }
+    .left {
+      width: 20%;
+      background: #020617;
+      border-right: 1px solid #1e293b;
+    }
+    .center {
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+    }
+    .right {
+      width: 20%;
+      background: #020617;
+      border-left: 1px solid #1e293b;
+      overflow-y: auto;
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: #38bdf8;
+    }
+    .status {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .msg {
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .user { color: #a5f3fc; }
+    .aix { color: #e5e7eb; }
+    .input-box {
+      display: flex;
+      border-top: 1px solid #1e293b;
+    }
+    input {
+      flex: 1;
+      padding: 12px;
+      background: #020617;
+      color: #fff;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+    button {
+      background: #38bdf8;
+      color: #020617;
+      border: none;
+      padding: 0 18px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .proof {
+      font-size: 12px;
+      background: #020617;
+      padding: 6px;
+      border: 1px solid #1e293b;
+      margin-bottom: 6px;
+      word-break: break-all;
+    }
+    .green { color: #22c55e; }
+    .red { color: #ef4444; }
+  </style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
-<aside>
-  <h2>📂 Workspaces</h2>
-  <div class="folder">General</div>
-  <div class="folder">Business</div>
-  <div class="folder">Development</div>
-  <div class="folder">Automation</div>
-
-  <div class="new-folder">+ New Topic</div>
-</aside>
-
-<!-- MAIN -->
-<main>
-<header>
-  <strong>🌐 AIX – Global Action Intelligence</strong>
-  <div class="status">
-    <div class="dot"></div>
-    <span id="statusText">Idle</span>
+<!-- LEFT: STATUS -->
+<div class="panel left">
+  <h2>Status</h2>
+  <div id="statusBox">
+    <div class="status">Loading...</div>
   </div>
-</header>
+  <button onclick="sendQuick('status')">Refresh</button>
+</div>
 
-<div id="chat"></div>
+<!-- CENTER: CHAT -->
+<div class="panel center">
+  <div class="chat" id="chat"></div>
+  <div class="input-box">
+    <input id="input" placeholder="इथे लिहा… (Marathi / Hindi / English)" />
+    <button onclick="send()">Send</button>
+  </div>
+</div>
 
-<footer>
-  <input id="input" placeholder="Type or speak your command (Marathi / Hindi / English)" />
-  <button class="voice" id="voice">🎙️</button>
-  <button class="save" id="save">💾</button>
-  <button class="send" id="send">Send</button>
-</footer>
-</main>
+<!-- RIGHT: PROOF -->
+<div class="panel right">
+  <h2>Proof / Output</h2>
+  <div id="proofBox"></div>
+</div>
 
 <script>
+const API = "https://boss-aix-backend-nai6.onrender.com/api/aix";
+
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
-const statusText = document.getElementById("statusText");
+const statusBox = document.getElementById("statusBox");
+const proofBox = document.getElementById("proofBox");
 
-function addMessage(text, who) {
+function addMsg(text, cls) {
   const div = document.createElement("div");
-  div.className = "msg " + who;
+  div.className = "msg " + cls;
   div.textContent = text;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
 }
 
-async function sendMessage(text) {
+async function sendQuick(text) {
+  addMsg(text, "user");
+  await callAIX(text);
+}
+
+async function send() {
+  const text = input.value.trim();
   if (!text) return;
-  addMessage(text, "user");
   input.value = "";
-  statusText.textContent = "Thinking…";
+  addMsg(text, "user");
+  await callAIX(text);
+}
 
-  const res = await fetch("https://boss-aix-backend-nai6.onrender.com/api/aix", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: text })
-  });
+async function callAIX(message) {
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })
+    });
+    const data = await res.json();
 
-  const data = await res.json();
-  statusText.textContent = "Idle";
+    if (data.reply) {
+      addMsg(data.reply, "aix");
 
-  if (data.reply) addMessage(data.reply, "aix");
-  if (data.job) {
-    addMessage(
-      `⏱️ JOB STARTED\nStatus: ${data.job.status}\nStep: ${data.job.currentStep}`,
-      "aix"
-    );
+      if (data.reply.includes("/backend/output")) {
+        const p = document.createElement("div");
+        p.className = "proof";
+        p.textContent = data.reply;
+        proofBox.prepend(p);
+      }
+
+      if (message === "status" || message === "health") {
+        statusBox.innerHTML = `<div class="status green">${data.reply}</div>`;
+      }
+    }
+  } catch (e) {
+    addMsg("❌ Backend error", "aix");
+    statusBox.innerHTML = `<div class="status red">Backend down</div>`;
   }
 }
 
-document.getElementById("send").onclick = () => sendMessage(input.value);
-input.addEventListener("keydown", e => {
-  if (e.key === "Enter") sendMessage(input.value);
-});
-
-/* Voice */
-const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-if (recognition) {
-  const r = new recognition();
-  r.lang = "en-IN";
-  document.getElementById("voice").onclick = () => {
-    r.start();
-    statusText.textContent = "Listening…";
-  };
-  r.onresult = e => {
-    input.value = e.results[0][0].transcript;
-    statusText.textContent = "Idle";
-  };
-}
-
-/* Save chat */
-document.getElementById("save").onclick = () => {
-  const text = chat.innerText;
-  const blob = new Blob([text], { type: "text/plain" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "aix-chat.txt";
-  a.click();
-};
-
-/* Greeting */
-addMessage(
-  "नमस्कार बॉस 👋\nमी AIX आहे.\nतुम्ही बोलू शकता, टाइप करू शकता, आणि रियल काम सुरू करू शकता.",
-  "aix"
-);
+// Auto hello
+addMsg("👋 नमस्कार बॉस. मी AIX आहे. काय करू?", "aix");
 </script>
 
 </body>
