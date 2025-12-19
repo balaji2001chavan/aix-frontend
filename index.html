@@ -1,64 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AIX Studio</title>
-<style>
-body {
-  margin: 0;
-  font-family: system-ui;
-  background: #000;
-  color: #fff;
-}
-.header {
-  padding: 12px;
-  font-weight: bold;
-  text-align: center;
-  background: #111;
-}
-.video-box {
-  width: 100%;
-  aspect-ratio: 9/16;
-  background: #111;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-video {
-  width: 100%;
-}
-.logs {
-  padding: 10px;
-  font-size: 13px;
-  opacity: 0.9;
-}
-button {
-  width: 90%;
-  margin: 10px 5%;
-  padding: 14px;
-  border-radius: 30px;
-  border: none;
-  background: #1db954;
-  color: #000;
-  font-weight: bold;
-}
-</style>
-</head>
-
-<body>
-<div class="header">AIX • Live Studio</div>
-
-<div class="video-box" id="preview">
-  <span>Waiting for job…</span>
-</div>
-
-<div class="logs" id="logs"></div>
-
-<button onclick="start()">▶ Create Video</button>
-
 <script>
+const API = "https://boss-aix-backend-nai6.onrender.com";
+
 async function start() {
-  await fetch("/api/start", {
+  await fetch(API + "/api/start", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ type: "video" })
@@ -66,15 +10,22 @@ async function start() {
 }
 
 setInterval(async () => {
-  const logs = await fetch("/api/logs").then(r => r.json());
-  document.getElementById("logs").innerHTML = logs.join("<br>");
+  try {
+    const logsRes = await fetch(API + "/api/logs");
+    if (!logsRes.ok) return;
+    const logs = await logsRes.json();
+    document.getElementById("logs").innerHTML = logs.join("<br>");
 
-  const status = await fetch("/api/status").then(r => r.json());
-  if (status.job?.output) {
-    document.getElementById("preview").innerHTML =
-      `<video controls src="${status.job.output}"></video>`;
+    const statusRes = await fetch(API + "/api/status");
+    if (!statusRes.ok) return;
+    const status = await statusRes.json();
+
+    if (status.job?.output) {
+      document.getElementById("preview").innerHTML =
+        `<video controls src="${API}${status.job.output}"></video>`;
+    }
+  } catch (e) {
+    console.log("Waiting for backend...");
   }
 }, 1000);
 </script>
-</body>
-</html>
