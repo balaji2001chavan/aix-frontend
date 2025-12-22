@@ -1,63 +1,111 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-  <meta charset="UTF-8" />
-  <title>AIX Studio</title>
-  <style>
-    body { background:#0b0f14; color:#eaeaea; font-family:Arial; }
-    #chat { max-width:800px; margin:40px auto; }
-    .msg { margin:10px 0; }
-    .aix { color:#4ade80; }
-    .user { color:#60a5fa; }
-    input { width:80%; padding:10px; }
-    button { padding:10px 20px; }
-    .visual { margin-top:10px; padding:10px; background:#111827; }
-  </style>
+<meta charset="UTF-8" />
+<title>AIX Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  body {
+    margin:0;
+    background:linear-gradient(135deg,#0f172a,#020617);
+    font-family:system-ui;
+    color:#e5e7eb;
+  }
+  .app {
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+  }
+  h1 {
+    text-align:center;
+    color:#38bdf8;
+  }
+  .chat {
+    background:#020617;
+    border-radius:12px;
+    padding:15px;
+    min-height:300px;
+    margin-bottom:15px;
+    overflow-y:auto;
+  }
+  .msg {
+    margin:10px 0;
+    line-height:1.5;
+  }
+  .user { color:#60a5fa; }
+  .aix { color:#4ade80; }
+  .input-box {
+    display:flex;
+    gap:10px;
+  }
+  input {
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    font-size:16px;
+  }
+  button {
+    padding:12px 20px;
+    border-radius:10px;
+    border:none;
+    background:#38bdf8;
+    color:#020617;
+    font-weight:bold;
+    cursor:pointer;
+  }
+</style>
 </head>
 <body>
 
-<div id="chat">
-  <div class="msg aix">Good evening बॉस 👋 AIX तयार आहे.</div>
-</div>
+<div class="app">
+  <h1>AIX – Smart Business Intelligence</h1>
 
-<div style="text-align:center;">
-  <input id="input" placeholder="इथे लिहा..." />
-  <button onclick="send()">Send</button>
+  <div id="chat" class="chat">
+    <div class="msg aix">
+      नमस्कार बॉस 👋<br/>
+      मी AIX आहे — ready-made business intelligence.<br/>
+      आज काय करू?
+    </div>
+  </div>
+
+  <div class="input-box">
+    <input id="input" placeholder="इथे लिहा… (Marathi / Hindi / English)" />
+    <button onclick="send()">Send</button>
+  </div>
 </div>
 
 <script>
 async function send(){
   const input = document.getElementById("input");
-  const msg = input.value;
-  if(!msg) return;
+  const text = input.value.trim();
+  if(!text) return;
 
-  add("user", msg);
+  add("user", text);
   input.value = "";
 
-  const res = await fetch("/api/aix", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ message: msg })
-  });
+  try{
+    const res = await fetch("/api/aix", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ message:text })
+    });
 
-  const data = await res.json();
-  add("aix", data.reply || JSON.stringify(data));
+    const data = await res.json();
+    add("aix", data.reply);
 
-  if(data.visual){
-    add("aix", "👀 Visual Preview:");
-    add("aix", data.visual.preview);
-  }
-
-  if(data.result){
-    add("aix", "📄 Proof file: " + data.result.file);
+  }catch(e){
+    add("aix","⚠️ Server शी संपर्क झाला नाही.");
   }
 }
 
 function add(type, text){
   const div = document.createElement("div");
   div.className = "msg " + type;
-  div.innerText = text;
+  div.innerHTML = text.replace(/\n/g,"<br>");
   document.getElementById("chat").appendChild(div);
+  document.getElementById("chat").scrollTop =
+    document.getElementById("chat").scrollHeight;
 }
 </script>
 
