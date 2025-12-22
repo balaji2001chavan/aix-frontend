@@ -1,103 +1,278 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AIX • One Control</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIX • Super Intelligence Console</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
 <style>
-:root{--bg:#070a14;--panel:#0f1530;--card:#151c3d;--acc:#00f5a0;--txt:#e9ecf5;--mut:#9aa3b2;--warn:#ffb020}
-*{box-sizing:border-box} body{margin:0;font-family:Inter;background:radial-gradient(circle at top,#0b1233,#070a14);color:var(--txt)}
-.app{display:grid;grid-template-rows:56px 1fr 140px;height:100vh}
-.top{display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(15,21,48,.9);border-bottom:1px solid #1a235a}
-.badge{font-size:12px;color:var(--acc)}
-.main{display:grid;grid-template-columns:1fr 360px}
-.preview{position:relative;background:#000}
-.preview video{width:100%;height:100%;object-fit:cover}
-.hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--mut)}
-.overlay{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);padding:6px 10px;border-radius:20px;font-size:12px}
-.side{background:var(--panel);border-left:1px solid #1a235a;display:flex;flex-direction:column}
+:root{
+  --bg:#060914;
+  --panel:#0f1530;
+  --card:#151c3d;
+  --accent:#00f5a0;
+  --accent2:#4da3ff;
+  --text:#e9ecf5;
+  --muted:#9aa3b2;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter;
+  background:radial-gradient(circle at top,#0b1233,#060914);
+  color:var(--text);
+}
+.app{
+  display:grid;
+  grid-template-rows:56px 1fr 160px;
+  height:100vh;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 16px;
+  background:rgba(15,21,48,.95);
+  border-bottom:1px solid #1a235a;
+}
+.badge{font-size:12px;color:var(--accent)}
+.main{
+  display:grid;
+  grid-template-columns:1fr 360px;
+}
+.preview{
+  position:relative;
+  background:#000;
+}
+.preview video,.preview img,.preview audio{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.placeholder{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+}
+.side{
+  background:var(--panel);
+  border-left:1px solid #1a235a;
+  display:flex;
+  flex-direction:column;
+}
 .section{padding:12px;border-bottom:1px solid #1a235a}
-.section h4{margin:0 0 8px 0;font-size:13px;color:var(--mut)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.tool{background:var(--card);border-radius:12px;padding:10px;font-size:12px;text-align:center;cursor:pointer}
-.logs{flex:1;overflow:auto;font-size:12px;padding:12px}
-.bottom{display:flex;gap:10px;padding:12px;background:linear-gradient(180deg,var(--panel),#070a14)}
-button{flex:1;padding:14px;border:none;border-radius:14px;font-weight:800}
-.start{background:linear-gradient(135deg,#00f5a0,#4da3ff);color:#000}
-.dl{background:#1b2355;color:#fff}
-@media(max-width:900px){.main{grid-template-columns:1fr}}
+.section h4{margin:0 0 8px;font-size:13px;color:var(--muted)}
+.tools{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.tool{
+  background:var(--card);
+  padding:10px;
+  border-radius:12px;
+  text-align:center;
+  font-size:12px;
+  cursor:pointer;
+}
+.files{
+  font-size:12px;
+  overflow:auto;
+  padding:10px;
+}
+.files div{padding:6px 0;cursor:pointer}
+.logs{
+  flex:1;
+  overflow:auto;
+  font-size:12px;
+  padding:12px;
+}
+.bottom{
+  background:linear-gradient(180deg,var(--panel),#060914);
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.chat{
+  display:flex;
+  gap:8px;
+}
+textarea{
+  flex:1;
+  resize:none;
+  border-radius:12px;
+  padding:10px;
+  font-family:Inter;
+  border:none;
+}
+button{
+  border:none;
+  border-radius:12px;
+  padding:12px 16px;
+  font-weight:800;
+  cursor:pointer;
+}
+.send{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#000;
+}
+.actionbar{
+  display:flex;
+  gap:10px;
+}
+.actionbar button{
+  flex:1;
+  background:#1b2355;
+  color:#fff;
+}
+@media(max-width:900px){
+  .main{grid-template-columns:1fr}
+}
 </style>
 </head>
+
 <body>
 <div class="app">
+
+  <!-- TOP -->
   <div class="top">
-    <b>AIX • One Control</b>
+    <b>AIX • Super Intelligence</b>
     <span class="badge" id="state">● READY</span>
   </div>
 
+  <!-- MAIN -->
   <div class="main">
-    <div class="preview" id="pv">
-      <div class="hint" id="hint">Tap START</div>
-      <div class="overlay">LIVE</div>
+
+    <!-- PREVIEW -->
+    <div class="preview" id="preview">
+      <div class="placeholder" id="placeholder">
+        Output preview will appear here
+      </div>
     </div>
 
+    <!-- SIDE -->
     <div class="side">
+
       <div class="section">
-        <h4>App Builder</h4>
-        <div class="grid">
-          <div class="tool" onclick="startJob('video')">🎬 Video</div>
-          <div class="tool" onclick="startJob('image')">🖼 Image</div>
-          <div class="tool" onclick="alert('Soon')">🧩 Tools</div>
+        <h4>Smart Tools</h4>
+        <div class="tools">
+          <div class="tool" onclick="quick('video')">🎬 Video</div>
+          <div class="tool" onclick="quick('image')">🖼 Image</div>
+          <div class="tool" onclick="quick('song')">🎵 Song</div>
+          <div class="tool" onclick="quick('files')">📁 Files</div>
           <div class="tool" onclick="openGit()">🐙 GitHub</div>
-          <div class="tool" onclick="alert('Deploy soon')">🚀 Deploy</div>
-          <div class="tool" onclick="alert('Settings soon')">⚙️ Settings</div>
+          <div class="tool" onclick="copyLink()">📋 Copy</div>
         </div>
       </div>
+
+      <div class="section">
+        <h4>Generated Files</h4>
+        <div class="files" id="files">No files yet</div>
+      </div>
+
       <div class="section">
         <h4>Live Logs</h4>
       </div>
       <div class="logs" id="logs">Idle…</div>
+
     </div>
   </div>
 
+  <!-- CHAT / CONSOLE -->
   <div class="bottom">
-    <button class="start" onclick="startJob('video')">START</button>
-    <button class="dl" onclick="download()">DOWNLOAD</button>
+    <div class="chat">
+      <textarea id="msg" rows="2" placeholder="बॉस, काय करायचं आहे? (Video / Image / Song / File / Anything)"></textarea>
+      <button class="send" onclick="send()">SEND</button>
+    </div>
+    <div class="actionbar">
+      <button onclick="download()">⬇ Download</button>
+      <button onclick="clearChat()">🧹 Clear</button>
+    </div>
   </div>
+
 </div>
 
 <script>
 const API="https://boss-aix-backend-nai6.onrender.com";
-let polling=false;
+let lastOutput=null;
 
-function openGit(){ window.open("https://github.com/balaji2001chavan/AIX-CLEAN","_blank"); }
-
-async function startJob(type){
+/* ===== CHAT SEND ===== */
+async function send(){
+  const t=document.getElementById("msg").value.trim();
+  if(!t) return;
   document.getElementById("state").innerText="● RUNNING";
-  const h=document.getElementById("hint"); if(h) h.innerText="⏳ Planning…";
-  await fetch(API+"/api/start",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({type})});
+  document.getElementById("msg").value="";
+  await fetch(API+"/api/command",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({goal:t})
+  });
 }
 
-function download(){ window.open(API+"/output/demo.mp4","_blank"); }
+/* ===== QUICK TOOLS ===== */
+function quick(type){
+  sendPreset(`Create ${type}`);
+}
 
+/* ===== PRESET ===== */
+function sendPreset(text){
+  document.getElementById("msg").value=text;
+  send();
+}
+
+/* ===== DOWNLOAD ===== */
+function download(){
+  if(lastOutput) window.open(API+lastOutput,"_blank");
+}
+
+/* ===== COPY ===== */
+function copyLink(){
+  if(lastOutput) navigator.clipboard.writeText(API+lastOutput);
+}
+
+/* ===== GITHUB ===== */
+function openGit(){
+  window.open("https://github.com/balaji2001chavan/AIX-CLEAN","_blank");
+}
+
+/* ===== POLL ===== */
+let polling=false;
 async function poll(){
-  if(polling) return; polling=true;
+  if(polling) return;
+  polling=true;
   try{
     const s=await fetch(API+"/api/status").then(r=>r.json());
     if(!s.running){
       document.getElementById("state").innerText="● READY";
-      setTimeout(poll,5000);
+      setTimeout(poll,4000);
       return;
     }
     const l=await fetch(API+"/api/logs").then(r=>r.json());
     document.getElementById("logs").innerHTML=l.join("<br>");
-    const h=document.getElementById("hint");
-    if(h && l[l.length-1]) h.innerText="⏳ "+l[l.length-1];
 
     if(s.job?.output){
-      const v=document.createElement("video");
-      v.src=API+s.job.output; v.controls=true;
-      const pv=document.getElementById("pv"); pv.innerHTML=""; pv.appendChild(v);
+      lastOutput=s.job.output;
+      document.getElementById("files").innerHTML=
+        `<div onclick="download()">📄 ${s.job.output}</div>`;
+
+      const p=document.getElementById("preview");
+      p.innerHTML="";
+      if(s.job.output.endsWith(".mp4")){
+        const v=document.createElement("video");
+        v.src=API+s.job.output;
+        v.controls=true;
+        p.appendChild(v);
+      }else if(s.job.output.endsWith(".png")){
+        const i=document.createElement("img");
+        i.src=API+s.job.output;
+        p.appendChild(i);
+      }
       document.getElementById("state").innerText="● DONE";
       setTimeout(poll,5000);
       return;
@@ -105,9 +280,14 @@ async function poll(){
     setTimeout(poll,2000);
   }catch{
     setTimeout(poll,8000);
-  }finally{ polling=false; }
+  }finally{polling=false;}
 }
 poll();
+
+/* ===== UTIL ===== */
+function clearChat(){
+  document.getElementById("logs").innerText="Cleared";
+}
 </script>
 </body>
 </html>
