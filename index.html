@@ -2,23 +2,55 @@
 <html>
 <head>
 <meta charset="UTF-8" />
-<title>AIX Live</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AIX Live System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <style>
-body { margin:0; background:#0b1020; color:#fff; font-family:system-ui; }
-body.galaxy { background: radial-gradient(circle,#001,#000); }
-#log { height:80vh; overflow:auto; padding:16px; }
+body {
+  margin:0;
+  font-family: system-ui;
+  background:#0b1020;
+  color:white;
+}
+body.galaxy {
+  background: radial-gradient(circle at top, #020024, #090979, #000);
+}
+#log {
+  height:80vh;
+  overflow:auto;
+  padding:16px;
+}
 .msg { margin-bottom:10px; }
 .user { text-align:right; }
 .aix { color:#7dd3fc; }
-#bar { display:flex; border-top:1px solid #333; }
-#bar input { flex:1; padding:12px; background:#111; color:#fff; border:none; }
-#bar button { padding:12px; background:#2563eb; color:#fff; border:none; }
-.card { background:#111827; padding:10px; border-radius:8px; margin-top:8px; }
+#bar {
+  display:flex;
+  border-top:1px solid #333;
+}
+#bar input {
+  flex:1;
+  padding:12px;
+  background:#111;
+  border:none;
+  color:white;
+}
+#bar button {
+  padding:12px 18px;
+  background:#2563eb;
+  border:none;
+  color:white;
+}
+.card {
+  background:#111827;
+  padding:10px;
+  border-radius:8px;
+  margin-top:8px;
+}
 </style>
 </head>
 
 <body>
+
 <div id="log">
   <div class="msg aix">👋 AIX live आहे बॉस. आदेश द्या.</div>
 </div>
@@ -29,35 +61,59 @@ body.galaxy { background: radial-gradient(circle,#001,#000); }
 </div>
 
 <script>
+const BACKEND_URL = "https://boss-aix-backend-nai6.onrender.com"; 
+// 👆 इथे तुमचा REAL backend URL ठेवा
+
 const log = document.getElementById("log");
-function add(t,c="aix"){const d=document.createElement("div");d.className="msg "+c;d.innerText=t;log.appendChild(d);log.scrollTop=99999;}
 
-async function send(){
-  const i=document.getElementById("inp");
-  const text=i.value.trim();
-  if(!text) return;
-  add(text,"user"); i.value="";
-  const r=await fetch("https://YOUR-BACKEND-URL/api/aix",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text})});
-  const j=await r.json();
+function add(text, who="aix") {
+  const d = document.createElement("div");
+  d.className = "msg " + who;
+  d.innerText = text;
+  log.appendChild(d);
+  log.scrollTop = 99999;
+}
 
-  add(j.explain || "Done");
+async function send() {
+  const inp = document.getElementById("inp");
+  const text = inp.value.trim();
+  if (!text) return;
 
-  if(j.type==="UI" && j.action==="GALAXY"){
-    document.body.classList.add("galaxy");
-    add("✅ Screen बदलला","aix");
-  }
+  add(text, "user");
+  inp.value = "";
 
-  if(j.type==="FILE"){
-    const c=document.createElement("div");
-    c.className="card";
-    c.innerHTML=`⬇️ <a href="${j.download}" target="_blank">Download file</a>`;
-    log.appendChild(c);
-  }
+  try {
+    const res = await fetch(BACKEND_URL + "/api/aix", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
 
-  if(j.type==="GITHUB"){
-    j.commands.forEach(cmd=>add(cmd,"aix"));
+    const data = await res.json();
+
+    add(data.explain || data.message || "Done");
+
+    if (data.type === "UI" && data.action === "GALAXY") {
+      document.body.classList.add("galaxy");
+      add("✅ Screen galaxy mode मध्ये आहे");
+    }
+
+    if (data.type === "FILE") {
+      const c = document.createElement("div");
+      c.className = "card";
+      c.innerHTML = `⬇️ <a href="${BACKEND_URL}${data.download}" target="_blank">Download file</a>`;
+      log.appendChild(c);
+    }
+
+    if (data.type === "GITHUB") {
+      data.commands.forEach(cmd => add(cmd));
+    }
+
+  } catch (err) {
+    add("❌ Backend शी संपर्क झाला नाही");
   }
 }
 </script>
+
 </body>
 </html>
