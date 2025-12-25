@@ -1,71 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>AIX Live Studio</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{margin:0;background:#020617;color:#e5e7eb;font-family:system-ui}
-.app{display:flex;height:100vh}
-.left{width:40%;padding:10px;border-right:1px solid #1e293b}
-.right{flex:1;padding:10px}
-.chat{height:80vh;overflow:auto}
-.msg{margin-bottom:8px;white-space:pre-wrap}
-.user{color:#60a5fa}
-.aix{color:#4ade80}
-input{width:100%;padding:10px;border-radius:8px;border:none}
-button{margin-top:6px;padding:10px;width:100%;border:none;border-radius:8px;background:#38bdf8}
-.output{margin-top:10px;padding:10px;background:#020617;border:1px solid #1e293b}
-</style>
+  <meta charset="UTF-8" />
+  <title>AIX – Live Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --glass-bg: rgba(255,255,255,0.15);
+      --glass-border: rgba(255,255,255,0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(circle at top, #0f2027, #203a43, #2c5364);
+      overflow: hidden;
+      color: #fff;
+      transition: background 1s ease;
+    }
+
+    body.galaxy {
+      background:
+        radial-gradient(circle at 20% 20%, #ffffff33 1px, transparent 1px),
+        radial-gradient(circle at 80% 40%, #ffffff22 1px, transparent 1px),
+        radial-gradient(circle at 50% 80%, #ffffff22 1px, transparent 1px),
+        linear-gradient(135deg, #000428, #004e92);
+      background-size: 3px 3px, 4px 4px, 2px 2px, cover;
+      animation: moveStars 30s linear infinite;
+    }
+
+    @keyframes moveStars {
+      from { background-position: 0 0, 0 0, 0 0, 0 0; }
+      to   { background-position: 1000px 1000px, -800px 400px, 600px -600px, 0 0; }
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-box {
+      width: 90%;
+      max-width: 420px;
+      height: 70vh;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(20px);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      transition: all 0.6s ease;
+    }
+
+    .chat-header {
+      padding: 16px;
+      font-weight: 600;
+      text-align: center;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+    .msg {
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .msg.aix {
+      color: #9fe7ff;
+    }
+
+    .msg.user {
+      text-align: right;
+      color: #fff;
+    }
+
+    .input-bar {
+      display: flex;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .input-bar input {
+      flex: 1;
+      padding: 14px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .input-bar button {
+      padding: 14px 18px;
+      background: transparent;
+      border: none;
+      color: #00e0ff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .status {
+      margin-top: 12px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+  </style>
 </head>
 
 <body>
-<div class="app">
-  <div class="left">
-    <h3>🧠 AIX Chat</h3>
-    <div id="chat" class="chat">
-      <div class="msg aix">नमस्कार बॉस 👋<br>काय करायचं आहे?</div>
+  <div class="app">
+    <div class="chat-box" id="chatBox">
+      <div class="chat-header">AIX • Live Intelligence</div>
+
+      <div class="messages" id="messages">
+        <div class="msg aix">
+          👋 Good evening बॉस.  
+          AIX live आहे. बोलून बदल करून पाहा.
+        </div>
+      </div>
+
+      <div class="input-bar">
+        <input id="input" placeholder="बोल बॉस… (उदा: screen galaxy कर)" />
+        <button onclick="send()">Send</button>
+      </div>
     </div>
-    <input id="input" placeholder="इथे लिहा…">
-    <button onclick="send()">Send</button>
+
+    <div class="status" id="status">Mode: UI-LIVE</div>
   </div>
 
-  <div class="right">
-    <h3>📂 Live Output</h3>
-    <div id="output" class="output">No job yet</div>
-  </div>
-</div>
+  <script>
+    function addMsg(text, who) {
+      const div = document.createElement("div");
+      div.className = "msg " + who;
+      div.innerText = text;
+      document.getElementById("messages").appendChild(div);
+      document.getElementById("messages").scrollTop = 99999;
+    }
 
-<script>
-const BACKEND = "https://boss-aix-backend-nai6.onrender.com";
+    function send() {
+      const input = document.getElementById("input");
+      const text = input.value.trim();
+      if (!text) return;
 
-function add(role,text){
-  const d=document.createElement("div");
-  d.className="msg "+role;
-  d.innerText=text;
-  chat.appendChild(d);
-  chat.scrollTop=chat.scrollHeight;
-}
+      addMsg(text, "user");
+      input.value = "";
 
-async function send(){
-  const t=input.value.trim();
-  if(!t) return;
-  add("user",t);
-  input.value="";
-  const r=await fetch(BACKEND+"/api/aix",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({message:t})
-  });
-  const d=await r.json();
-  add("aix",d.reply);
-  if(d.output){
-    output.innerHTML = `
-      <b>Status:</b> DONE<br>
-      <a href="${BACKEND}${d.output.url}" download>⬇️ Download Output</a>
-    `;
-  }
-}
-</script>
+      // UI command detection
+      if (text.toLowerCase().includes("galaxy")) {
+        addMsg("🛠️ समजलं बॉस. Galaxy mode apply करतोय…", "aix");
+
+        setTimeout(() => {
+          document.body.classList.add("galaxy");
+          document.getElementById("chatBox").style.backdropFilter = "blur(30px)";
+          addMsg("✅ Done बॉस. Screen galaxy mode मध्ये आहे. पाहा 🔥", "aix");
+        }, 800);
+
+        return;
+      }
+
+      addMsg("🤖 हे UI बदल command नाही. अजून सांगू शकता बॉस.", "aix");
+    }
+  </script>
 </body>
 </html>
