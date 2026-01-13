@@ -1,55 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>AIX – Agentic AI</title>
   <style>
-    body { font-family: Arial; background:#0f172a; color:#fff; }
-    #chat { max-width:600px; margin:40px auto; }
-    .msg { margin:10px 0; }
-    .user { color:#38bdf8; }
-    .aix { color:#4ade80; }
-    input { width:80%; padding:10px; }
-    button { padding:10px; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      padding: 16px;
+      background: #020617;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    #chat {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .msg {
+      margin-bottom: 12px;
+    }
+    .user { color: #60a5fa; }
+    .aix { color: #34d399; }
+    footer {
+      display: flex;
+      padding: 12px;
+      background: #020617;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      margin-left: 8px;
+      padding: 10px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-<div id="chat">
-  <h2>🤖 AIX – Agentic Intelligence</h2>
-  <div id="messages"></div>
+<header>🤖 AIX – Agentic AI</header>
+
+<div id="chat"></div>
+
+<footer>
   <input id="input" placeholder="Talk to AIX..." />
   <button onclick="send()">Send</button>
-</div>
+</footer>
 
 <script>
-const API = "http://13.61.225.145:8080/api/aix/chat";
+  const chat = document.getElementById("chat");
 
-function add(role, text){
-  const div = document.createElement("div");
-  div.className = "msg " + role;
-  div.innerText = role.toUpperCase() + ": " + text;
-  document.getElementById("messages").appendChild(div);
-}
-
-async function send(){
-  const input = document.getElementById("input");
-  const text = input.value;
-  input.value = "";
-  add("user", text);
-
-  try {
-    const res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text })
-    });
-    const data = await res.json();
-    add("aix", data.reply);
-  } catch (e) {
-    add("aix", "Connection error");
+  function add(role, text) {
+    const div = document.createElement("div");
+    div.className = "msg " + role;
+    div.innerText = (role === "user" ? "YOU: " : "AIX: ") + text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
   }
-}
+
+  async function send() {
+    const input = document.getElementById("input");
+    const text = input.value.trim();
+    if (!text) return;
+
+    add("user", text);
+    input.value = "";
+
+    try {
+      const res = await fetch("http://127.0.0.1:8080/api/aix/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+      add("aix", data.reply);
+    } catch (e) {
+      add("aix", "Connection error");
+    }
+  }
 </script>
 
 </body>
