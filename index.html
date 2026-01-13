@@ -2,114 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AIX – Autonomous Intelligence</title>
+  <title>AIX – Agentic Intelligence</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ================= STYLE ================= -->
   <style>
-    :root {
-      --bg: #0f0f14;
-      --panel: #161622;
-      --accent: #4f9cff;
-      --text: #eaeaf0;
-      --muted: #9aa0b4;
-    }
-
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
     body {
       margin: 0;
-      background: var(--bg);
-      color: var(--text);
+      font-family: Inter, system-ui, sans-serif;
+      background: #0f0f0f;
+      color: #fff;
       display: flex;
+      flex-direction: column;
       height: 100vh;
     }
 
-    /* Sidebar */
-    .sidebar {
-      width: 260px;
-      background: var(--panel);
-      padding: 20px;
-      border-right: 1px solid #222;
-    }
-
-    .logo {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 20px;
-    }
-
-    .hint {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    /* Main */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .header {
-      padding: 16px 20px;
+    header {
+      padding: 14px 20px;
+      background: #111;
       border-bottom: 1px solid #222;
       font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
-    .chat {
+    #chat {
       flex: 1;
-      padding: 20px;
       overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .msg {
       max-width: 80%;
       padding: 12px 14px;
-      margin-bottom: 14px;
-      border-radius: 12px;
-      line-height: 1.4;
+      border-radius: 10px;
+      line-height: 1.5;
       white-space: pre-wrap;
     }
 
     .user {
-      background: #1e1e2f;
-      margin-left: auto;
+      align-self: flex-end;
+      background: #2563eb;
     }
 
     .aix {
-      background: #121a2f;
-      border: 1px solid #24315a;
+      align-self: flex-start;
+      background: #1f2937;
     }
 
-    .input-bar {
+    footer {
       display: flex;
-      gap: 10px;
-      padding: 16px;
+      padding: 12px;
       border-top: 1px solid #222;
+      background: #111;
+      gap: 10px;
     }
 
     input {
       flex: 1;
-      padding: 14px;
-      background: #111;
+      background: #000;
       border: 1px solid #333;
-      border-radius: 10px;
-      color: var(--text);
+      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      outline: none;
       font-size: 15px;
     }
 
     button {
-      padding: 14px 18px;
-      background: var(--accent);
+      background: #22c55e;
       border: none;
-      border-radius: 10px;
-      color: #fff;
+      padding: 0 18px;
+      border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
     }
@@ -118,90 +83,89 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
+
+    .error {
+      color: #f87171;
+      font-size: 13px;
+      margin-top: 6px;
+    }
   </style>
 </head>
-
 <body>
 
-  <!-- =============== SIDEBAR =============== -->
-  <div class="sidebar">
-    <div class="logo">AIX</div>
-    <div class="hint">
-      Autonomous Intelligence eXecutor<br><br>
-      • Advisor  
-      • Engineer  
-      • Executor  
-      • Agentic AI  
+<header>🤖 AIX — Agentic AI Console</header>
 
-      <br><br>
-      बोलून आदेश द्या.<br>
-      AIX समजेल, सांगेल आणि पुढे करेल.
-    </div>
-  </div>
+<div id="chat"></div>
 
-  <!-- =============== MAIN =============== -->
-  <div class="main">
-    <div class="header">AIX – Live Autonomous Chat</div>
+<footer>
+  <input id="input" placeholder="Talk to AIX..." />
+  <button id="send">Send</button>
+</footer>
 
-    <div class="chat" id="chat"></div>
+<script>
+  // 🔴 IMPORTANT: इथेच backend URL सेट होतो
+  const API_URL = "https://allinonestopdeals.com/api/aix/chat";
+  // जर test करायचं असेल:
+  // const API_URL = "http://127.0.0.1:8080/api/aix/chat";
 
-    <div class="input-bar">
-      <input id="input" placeholder="AIX ला काय करायला सांगायचं आहे?" />
-      <button id="send">Send</button>
-    </div>
-  </div>
+  const chat = document.getElementById("chat");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("send");
 
-  <!-- ================= SCRIPT ================= -->
-  <script>
-    const API_URL = "https://allinonestopdeals.com/api/aix/chat";
+  function addMessage(text, cls) {
+    const div = document.createElement("div");
+    div.className = "msg " + cls;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
 
-    const chat = document.getElementById("chat");
-    const input = document.getElementById("input");
-    const sendBtn = document.getElementById("send");
+  async function send() {
+    const text = input.value.trim();
+    if (!text) return;
 
-    function addMessage(text, cls) {
-      const div = document.createElement("div");
-      div.className = "msg " + cls;
-      div.textContent = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
+    input.value = "";
+    addMessage(text, "user");
+    sendBtn.disabled = true;
 
-    async function sendMessage() {
-      const msg = input.value.trim();
-      if (!msg) return;
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
 
-      addMessage(msg, "user");
-      input.value = "";
-      sendBtn.disabled = true;
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: msg })
-        });
-
-        const data = await res.json();
-        addMessage(data.reply || "AIX: No response", "aix");
-      } catch (err) {
-        addMessage("❌ AIX connection error", "aix");
-      } finally {
-        sendBtn.disabled = false;
+      if (!res.ok) {
+        throw new Error("Server error " + res.status);
       }
+
+      const data = await res.json();
+      addMessage(data.reply || "AIX responded.", "aix");
+
+    } catch (err) {
+      addMessage(
+        "⚠️ Connection Error\n" +
+        "AIX backend reachable नाही.\n" +
+        "Check API URL / HTTPS / Security Group.",
+        "aix"
+      );
+      console.error(err);
+    } finally {
+      sendBtn.disabled = false;
     }
+  }
 
-    sendBtn.onclick = sendMessage;
-    input.addEventListener("keydown", e => {
-      if (e.key === "Enter") sendMessage();
-    });
+  sendBtn.onclick = send;
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") send();
+  });
 
-    // Welcome message
-    addMessage(
-      "👋 Hello. I am AIX.\nAutonomous mode ready.\nTell me what to do.",
-      "aix"
-    );
-  </script>
+  // Welcome message
+  addMessage(
+    "Hello 👋\nI am AIX.\nYour advisor, engineer & executor.\nTell me what to build.",
+    "aix"
+  );
+</script>
 
 </body>
 </html>
