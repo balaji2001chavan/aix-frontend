@@ -25,7 +25,7 @@ async function send() {
   chat.innerHTML += `<div class="msg user">You: ${text}</div>`;
   msg.value = "";
 
-  const res = await fetch("https://YOUR-DOMAIN/api/aix/chat", {
+  const res = await fetch("https://allinonestopdeals.com/api/aix/chat")
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({ message: text })
