@@ -1,12 +1,12 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Inter, sans-serif;
   background: #0f172a;
-  color: #fff;
+  color: #e5e7eb;
 }
 
 .app {
-  max-width: 800px;
+  max-width: 900px;
   margin: auto;
   height: 100vh;
   display: flex;
@@ -15,10 +15,9 @@ body {
 
 header {
   padding: 16px;
-  background: #020617;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
-  text-align: center;
+  background: #020617;
 }
 
 #chat {
@@ -28,11 +27,12 @@ header {
 }
 
 .msg {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  line-height: 1.6;
 }
 
 .user { color: #38bdf8; }
-.aix { color: #a7f3d0; }
+.aix  { color: #22c55e; }
 
 .input-box {
   display: flex;
@@ -43,15 +43,16 @@ header {
 input {
   flex: 1;
   padding: 12px;
-  border-radius: 6px;
   border: none;
+  outline: none;
+  background: #020617;
+  color: white;
 }
 
 button {
-  margin-left: 8px;
-  padding: 12px 20px;
+  padding: 12px 18px;
   background: #22c55e;
   border: none;
-  border-radius: 6px;
   cursor: pointer;
+  font-weight: bold;
 }
