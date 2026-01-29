@@ -2,22 +2,218 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AIX – Agentic AI</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>AIX – Autonomous Intelligence eXecutor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #121822;
+      --text: #e6edf3;
+      --muted: #9aa4b2;
+      --accent: #4f8cff;
+      --user: #1e90ff;
+      --aix: #22c55e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 14px 20px;
+      background: var(--panel);
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 16px;
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    header span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    #chat {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .msg {
+      max-width: 80%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: #1e293b;
+      border: 1px solid #334155;
+    }
+
+    .aix {
+      align-self: flex-start;
+      background: #052e1c;
+      border: 1px solid #14532d;
+    }
+
+    .label {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-bottom: 4px;
+    }
+
+    footer {
+      padding: 14px;
+      background: var(--panel);
+      border-top: 1px solid #1f2937;
+      display: flex;
+      gap: 10px;
+    }
+
+    textarea {
+      flex: 1;
+      resize: none;
+      background: #020617;
+      border: 1px solid #1f2937;
+      color: var(--text);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      height: 48px;
+    }
+
+    button {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 0 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .thinking {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="app">
-  <header>AIX – Agentic Builder AI</header>
+<header>
+  <h1>AIX <span>Autonomous Intelligence eXecutor</span></h1>
+  <span id="status">● online</span>
+</header>
 
-  <div id="chat"></div>
-
-  <div class="input-box">
-    <input id="msg" placeholder="Tell AIX what you want to build…" />
-    <button onclick="send()">Send</button>
+<div id="chat">
+  <div class="msg aix">
+    <div class="label">AIX</div>
+    Hello.  
+    I am AIX — your advisor, engineer, and executor.  
+    Tell me what you want to build, fix, or understand.
   </div>
 </div>
 
-<script src="script.js"></script>
+<footer>
+  <textarea id="input" placeholder="Talk to AIX…"></textarea>
+  <button id="send">Send</button>
+</footer>
+
+<script>
+  const API_URL = "https://allinonestopdeals.com/api/aix/chat";
+
+  const chat = document.getElementById("chat");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("send");
+
+  function addMessage(role, text) {
+    const div = document.createElement("div");
+    div.className = "msg " + (role === "user" ? "user" : "aix");
+
+    const label = document.createElement("div");
+    label.className = "label";
+    label.textContent = role === "user" ? "You" : "AIX";
+
+    const body = document.createElement("div");
+    body.textContent = text;
+
+    div.appendChild(label);
+    div.appendChild(body);
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = "";
+    addMessage("user", text);
+
+    const thinking = document.createElement("div");
+    thinking.className = "thinking";
+    thinking.textContent = "AIX is thinking…";
+    chat.appendChild(thinking);
+    chat.scrollTop = chat.scrollHeight;
+
+    sendBtn.disabled = true;
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+      thinking.remove();
+      addMessage("aix", data.reply || "No response.");
+
+    } catch (err) {
+      thinking.remove();
+      addMessage("aix", "Connection error. Backend unreachable.");
+    }
+
+    sendBtn.disabled = false;
+  }
+
+  sendBtn.onclick = sendMessage;
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+</script>
+
 </body>
 </html>
