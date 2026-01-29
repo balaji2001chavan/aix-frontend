@@ -1,147 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>AIX – Autonomous Intelligence eXecutor</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<title>AIX – Master Agent AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    :root {
-      --bg: #0b0f14;
-      --panel: #121822;
-      --text: #e6edf3;
-      --muted: #9aa4b2;
-      --accent: #4f8cff;
-      --user: #1e90ff;
-      --aix: #22c55e;
-    }
+<style>
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: #e5e7eb;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-    * { box-sizing: border-box; }
+  header {
+    padding: 16px 20px;
+    background: rgba(15,23,42,0.8);
+    border-bottom: 1px solid #1e293b;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
 
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+  header span {
+    color: #38bdf8;
+  }
 
-    header {
-      padding: 14px 20px;
-      background: var(--panel);
-      border-bottom: 1px solid #1f2937;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  #status {
+    font-size: 13px;
+    color: #22c55e;
+  }
 
-    header h1 {
-      font-size: 16px;
-      margin: 0;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
+  main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
 
-    header span {
-      font-size: 12px;
-      color: var(--muted);
-    }
+  .msg {
+    max-width: 800px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
 
-    #chat {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+  .user {
+    color: #93c5fd;
+  }
 
-    .msg {
-      max-width: 80%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
+  .aix {
+    color: #e5e7eb;
+  }
 
-    .user {
-      align-self: flex-end;
-      background: #1e293b;
-      border: 1px solid #334155;
-    }
+  .bubble {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgba(30,41,59,0.7);
+    border: 1px solid #334155;
+  }
 
-    .aix {
-      align-self: flex-start;
-      background: #052e1c;
-      border: 1px solid #14532d;
-    }
+  footer {
+    padding: 14px;
+    border-top: 1px solid #1e293b;
+    background: rgba(2,6,23,0.9);
+    display: flex;
+    gap: 10px;
+  }
 
-    .label {
-      font-size: 11px;
-      opacity: 0.7;
-      margin-bottom: 4px;
-    }
+  textarea {
+    flex: 1;
+    resize: none;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: #020617;
+    color: #e5e7eb;
+    font-size: 14px;
+    height: 60px;
+  }
 
-    footer {
-      padding: 14px;
-      background: var(--panel);
-      border-top: 1px solid #1f2937;
-      display: flex;
-      gap: 10px;
-    }
+  button {
+    width: 110px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg,#38bdf8,#0ea5e9);
+    color: #020617;
+    font-weight: 600;
+    cursor: pointer;
+  }
 
-    textarea {
-      flex: 1;
-      resize: none;
-      background: #020617;
-      border: 1px solid #1f2937;
-      color: var(--text);
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 14px;
-      height: 48px;
-    }
+  button:disabled {
+    opacity: 0.5;
+  }
 
-    button {
-      background: var(--accent);
-      border: none;
-      color: white;
-      padding: 0 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .thinking {
-      font-size: 12px;
-      color: var(--muted);
-      font-style: italic;
-    }
-  </style>
+  .error {
+    color: #f87171;
+  }
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>AIX <span>Autonomous Intelligence eXecutor</span></h1>
-  <span id="status">● online</span>
+  AIX <span>Master Agent AI</span><br>
+  <span id="status">● Backend checking...</span>
 </header>
 
-<div id="chat">
+<main id="chat">
   <div class="msg aix">
-    <div class="label">AIX</div>
-    Hello.  
-    I am AIX — your advisor, engineer, and executor.  
-    Tell me what you want to build, fix, or understand.
+    <div class="bubble">
+      Hello. I am AIX.<br>
+      I advise, engineer, and execute.<br><br>
+      Tell me what you want to build, fix, or grow.
+    </div>
   </div>
-</div>
+</main>
 
 <footer>
   <textarea id="input" placeholder="Talk to AIX…"></textarea>
@@ -149,70 +125,80 @@
 </footer>
 
 <script>
-  const API_URL = "https://allinonestopdeals.com/api/aix/chat";
+const API_BASE = "https://allinonestopdeals.com"; 
+// 👉 जर IP वापरायचा असेल तर:
+// const API_BASE = "http://13.61.225.145:8080";
 
-  const chat = document.getElementById("chat");
-  const input = document.getElementById("input");
-  const sendBtn = document.getElementById("send");
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("send");
+const statusEl = document.getElementById("status");
 
-  function addMessage(role, text) {
-    const div = document.createElement("div");
-    div.className = "msg " + (role === "user" ? "user" : "aix");
+function addMessage(text, type) {
+  const wrap = document.createElement("div");
+  wrap.className = "msg " + type;
 
-    const label = document.createElement("div");
-    label.className = "label";
-    label.textContent = role === "user" ? "You" : "AIX";
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
 
-    const body = document.createElement("div");
-    body.textContent = text;
+  wrap.appendChild(bubble);
+  chat.appendChild(wrap);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-    div.appendChild(label);
-    div.appendChild(body);
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
+async function checkBackend() {
+  try {
+    const res = await fetch(API_BASE + "/api/health");
+    if (!res.ok) throw new Error();
+    statusEl.textContent = "● AIX Online";
+    statusEl.style.color = "#22c55e";
+  } catch {
+    statusEl.textContent = "● Backend unreachable";
+    statusEl.style.color = "#f87171";
+  }
+}
+
+async function sendMessage() {
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  addMessage("You: " + msg, "user");
+  input.value = "";
+  sendBtn.disabled = true;
+
+  try {
+    const res = await fetch(API_BASE + "/api/aix/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg })
+    });
+
+    if (!res.ok) throw new Error("Server error");
+
+    const data = await res.json();
+    addMessage("AIX:\n" + data.reply, "aix");
+
+  } catch (err) {
+    addMessage(
+      "Connection error.\nAIX backend is not reachable.\nCheck AWS / NGINX / API.",
+      "aix error"
+    );
   }
 
-  async function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
+  sendBtn.disabled = false;
+}
 
-    input.value = "";
-    addMessage("user", text);
-
-    const thinking = document.createElement("div");
-    thinking.className = "thinking";
-    thinking.textContent = "AIX is thinking…";
-    chat.appendChild(thinking);
-    chat.scrollTop = chat.scrollHeight;
-
-    sendBtn.disabled = true;
-
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text })
-      });
-
-      const data = await res.json();
-      thinking.remove();
-      addMessage("aix", data.reply || "No response.");
-
-    } catch (err) {
-      thinking.remove();
-      addMessage("aix", "Connection error. Backend unreachable.");
-    }
-
-    sendBtn.disabled = false;
+sendBtn.onclick = sendMessage;
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
   }
+});
 
-  sendBtn.onclick = sendMessage;
-  input.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
+checkBackend();
+setInterval(checkBackend, 10000);
 </script>
 
 </body>
